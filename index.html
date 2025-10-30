@@ -82,6 +82,32 @@
     }
     .play-btn:hover, .mini-btn:hover { transform: scale(1.05); }
 
+    .mode-switch-container {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    #modeSwitch {
+      background: var(--accent);
+      color: #0b0d10;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    #modeSwitch[aria-pressed="true"] {
+      background: #fff6b3;
+    }
+    #modeLabel {
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
     footer {
       margin-top: 40px;
       display: flex;
@@ -125,6 +151,7 @@
       align-items: center;
       flex-direction: column;
       z-index: 1000;
+      pointer-events: auto;
     }
     #backBtn {
       position: absolute;
@@ -145,6 +172,7 @@
       footer { font-size: 0.85rem; }
       .socials a { font-size: 1rem; padding: 8px 14px; }
       #backBtn { font-size: 1.5rem; }
+      #modeLabel { font-size: 0.9rem; }
     }
   </style>
 </head>
@@ -154,6 +182,11 @@
       <h1>Hraj se mnou!</h1>
       <p>Klikni a připoj se do hry 🎮</p>
     </header>
+
+    <div class="mode-switch-container">
+      <button id="modeSwitch" aria-pressed="false">Přepnout režim</button>
+      <span id="modeLabel">Režim: Divák</span>
+    </div>
 
     <div class="grid">
       <div class="card">
@@ -195,134 +228,143 @@
       viewer: { name: 'Divák', links: ['https://kahoot.it','https://openguessr.com/multiplayer/join','https://www.drawize.com/play'] },
       streamer: { name: 'Streamer', links: ['https://kahoot.com','https://openguessr.com/multiplayer/host','https://www.drawize.com/play'] }
     };
-    const linkEls=[document.getElementById('link1'),document.getElementById('link2'),document.getElementById('link3')];
-    const modeLabel=document.getElementById('modeLabel');
-    const footerMode=document.getElementById('footerMode');
-    const switchBtn=document.getElementById('modeSwitch');
-    function setMode(mode){
-      const m=MODES[mode]||MODES.viewer;
-      linkEls.forEach((el,i)=>el.href=m.links[i]);
-      modeLabel.textContent='Režim: '+m.name;
-      footerMode.textContent=m.name;
-      try{localStorage.setItem('hraj-se-mnou-mode',mode);}catch(e){}
-      switchBtn.setAttribute('aria-pressed',mode==='streamer');
+    const linkEls = [
+      document.getElementById('link1'),
+      document.getElementById('link2'),
+      document.getElementById('link3')
+    ];
+    const modeLabel = document.getElementById('modeLabel');
+    const footerMode = document.getElementById('footerMode');
+    const switchBtn = document.getElementById('modeSwitch');
+    function setMode(mode) {
+      const m = MODES[mode] || MODES.viewer;
+      linkEls.forEach((el, i) => el.href = m.links[i]);
+      modeLabel.textContent = 'Režim: ' + m.name;
+      footerMode.textContent = m.name;
+      try { localStorage.setItem('hraj-se-mnou-mode', mode); } catch (e) {}
+      switchBtn.setAttribute('aria-pressed', mode === 'streamer');
     }
-    const saved=(function(){try{return localStorage.getItem('hraj-se-mnou-mode')}catch(e){return null}})()||'viewer';
+    const saved = (function() { try { return localStorage.getItem('hraj-se-mnou-mode') } catch (e) { return null } })() || 'viewer';
     setMode(saved);
-    switchBtn.addEventListener('click',()=>{
-      const curr=localStorage.getItem('hraj-se-mnou-mode')==='streamer'?'streamer':'viewer';
-      const next=curr==='streamer'?'viewer':'streamer';
+    switchBtn.addEventListener('click', () => {
+      const curr = localStorage.getItem('hraj-se-mnou-mode') === 'streamer' ? 'streamer' : 'viewer';
+      const next = curr === 'streamer' ? 'viewer' : 'streamer';
       setMode(next);
     });
 
     // Flappy Bird overlay toggle
-    const flappyBtn=document.getElementById('flappyBtn');
-    const flappyContainer=document.getElementById('flappyContainer');
-    const backBtn=document.getElementById('backBtn');
-    const canvas=document.getElementById('flappyCanvas');
-  <script>
-const ctx = canvas.getContext('2d');
-let cw = canvas.width = window.innerWidth;
-let ch = canvas.height = window.innerHeight;
+    const flappyBtn = document.getElementById('flappyBtn');
+    const flappyContainer = document.getElementById('flappyContainer');
+    const backBtn = document.getElementById('backBtn');
+    const canvas = document.getElementById('flappyCanvas');
+    const ctx = canvas.getContext('2d');
+    let cw = canvas.width = window.innerWidth;
+    let ch = canvas.height = window.innerHeight;
 
-// Hráč (ptáček)
-const bird = { x: 150, y: ch/2, w: 34, h: 24, gravity: 0.6, lift: -12, velocity: 0 };
+    // Hráč (ptáček)
+    const bird = { x: 150, y: ch/2, w: 34, h: 24, gravity: 0.6, lift: -12, velocity: 0 };
 
-// Trubky
-const pipes = [];
-const pipeWidth = 80;
-const gap = 200;
-let frame = 0;
-let score = 0;
-let highScore = parseInt(localStorage.getItem('flappyHighscore') || '0');
+    // Trubky
+    const pipes = [];
+    const pipeWidth = 80;
+    const gap = 200;
+    let frame = 0;
+    let score = 0;
+    let highScore = parseInt(localStorage.getItem('flappyHighscore') || '0');
 
-// Ovládání
-function flap() { bird.velocity = bird.lift; }
-document.addEventListener('keydown', e=>{ if(e.code==='Space'){ flap(); } });
-canvas.addEventListener('click', flap);
-canvas.addEventListener('touchstart', e=>{ e.preventDefault(); flap(); });
+    // Ovládání
+    function flap() { bird.velocity = bird.lift; }
+    document.addEventListener('keydown', e => { if (e.code === 'Space') { flap(); } });
+    canvas.addEventListener('click', flap);
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); flap(); });
 
-// Reset hry
-function resetGame() {
-  bird.y = ch/2;
-  bird.velocity = 0;
-  pipes.length = 0;
-  score = 0;
-  frame = 0;
-}
+    // Reset hry
+    function resetGame() {
+      bird.y = ch/2;
+      bird.velocity = 0;
+      pipes.length = 0;
+      score = 0;
+      frame = 0;
+    }
 
-// Změna velikosti canvasu při resize
-window.addEventListener('resize', ()=>{
-  cw = canvas.width = window.innerWidth;
-  ch = canvas.height = window.innerHeight;
-  resetGame();
-});
-
-// Generování trubek
-function addPipe() {
-  const top = Math.random() * (ch - gap - 200) + 50;
-  pipes.push({ x: cw, top: top, bottom: top + gap });
-}
-
-// Hlavní update a render loop
-function loop() {
-  ctx.fillStyle = '#0b0d10';
-  ctx.fillRect(0,0,cw,ch);
-
-  // ptáček
-  bird.velocity += bird.gravity;
-  bird.y += bird.velocity;
-  ctx.fillStyle = '#ffd300';
-  ctx.fillRect(bird.x, bird.y, bird.w, bird.h);
-
-  // trubky
-  if(frame % 90 === 0) addPipe();
-  for(let i=pipes.length-1;i>=0;i--){
-    pipes[i].x -= 4;
-    ctx.fillStyle = '#ffd300';
-    ctx.fillRect(pipes[i].x,0,pipeWidth,pipes[i].top);
-    ctx.fillRect(pipes[i].x,pipes[i].bottom,pipeWidth,ch-pipes[i].bottom);
-
-    // kolize
-    if(bird.x + bird.w > pipes[i].x && bird.x < pipes[i].x + pipeWidth &&
-       (bird.y < pipes[i].top || bird.y + bird.h > pipes[i].bottom)){
+    // Změna velikosti canvasu při resize
+    window.addEventListener('resize', () => {
+      cw = canvas.width = window.innerWidth;
+      ch = canvas.height = window.innerHeight;
       resetGame();
+    });
+
+    // Generování trubek
+    function addPipe() {
+      const top = Math.random() * (ch - gap - 200) + 50;
+      pipes.push({ x: cw, top: top, bottom: top + gap });
     }
 
-    // bodování
-    if(pipes[i].x + pipeWidth < bird.x && !pipes[i].passed){
-      score++;
-      pipes[i].passed = true;
-      if(score>highScore){ highScore = score; localStorage.setItem('flappyHighscore', highScore); }
+    // Hlavní update a render loop
+    let animationId;
+    function loop() {
+      ctx.fillStyle = '#0b0d10';
+      ctx.fillRect(0, 0, cw, ch);
+
+      // ptáček
+      bird.velocity += bird.gravity;
+      bird.y += bird.velocity;
+      ctx.fillStyle = '#ffd300';
+      ctx.fillRect(bird.x, bird.y, bird.w, bird.h);
+
+      // trubky
+      if (frame % 90 === 0) addPipe();
+      for (let i = pipes.length - 1; i >= 0; i--) {
+        pipes[i].x -= 4;
+        ctx.fillStyle = '#ffd300';
+        ctx.fillRect(pipes[i].x, 0, pipeWidth, pipes[i].top);
+        ctx.fillRect(pipes[i].x, pipes[i].bottom, pipeWidth, ch - pipes[i].bottom);
+
+        // kolize
+        if (bird.x + bird.w > pipes[i].x && bird.x < pipes[i].x + pipeWidth &&
+            (bird.y < pipes[i].top || bird.y + bird.h > pipes[i].bottom)) {
+          resetGame();
+        }
+
+        // bodování
+        if (pipes[i].x + pipeWidth < bird.x && !pipes[i].passed) {
+          score++;
+          pipes[i].passed = true;
+          if (score > highScore) { highScore = score; localStorage.setItem('flappyHighscore', highScore); }
+        }
+
+        if (pipes[i].x + pipeWidth < 0) pipes.splice(i, 1);
+      }
+
+      // zem
+      if (bird.y + bird.h > ch) resetGame();
+
+      // skóre
+      ctx.fillStyle = '#ffd300';
+      ctx.font = '32px Poppins';
+      ctx.fillText(`Score: ${score}`, 20, 50);
+      ctx.fillText(`Highscore: ${highScore}`, 20, 90);
+
+      frame++;
+      animationId = requestAnimationFrame(loop);
     }
 
-    if(pipes[i].x + pipeWidth < 0) pipes.splice(i,1);
-  }
+    // Spuštění hry po kliknutí na tlačítko
+    flappyBtn.addEventListener('click', () => {
+      flappyContainer.style.display = 'flex';
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      cw = canvas.width;
+      ch = canvas.height;
+      resetGame();
+      loop();
+    });
 
-  // zem
-  if(bird.y + bird.h > ch) resetGame();
-
-  // skóre
-  ctx.fillStyle = '#ffd300';
-  ctx.font = '32px Poppins';
-  ctx.fillText(`Score: ${score}`, 20, 50);
-  ctx.fillText(`Highscore: ${highScore}`, 20, 90);
-
-  frame++;
-  requestAnimationFrame(loop);
-}
-
-// Spuštění hry po kliknutí na tlačítko
-flappyBtn.addEventListener('click', ()=>{
-  flappyContainer.style.display = 'flex';
-  resetGame();
-  loop();
-});
-
-// Návrat zpět
-backBtn.addEventListener('click', ()=>{
-  flappyContainer.style.display = 'none';
-});
-</script>
+    // Návrat zpět
+    backBtn.addEventListener('click', () => {
+      flappyContainer.style.display = 'none';
+      cancelAnimationFrame(animationId);
+    });
+  </script>
 </body>
 </html>
