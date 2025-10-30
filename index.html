@@ -602,31 +602,29 @@
     document.querySelectorAll('button, a.play-btn, a').forEach(el => {
       if (!el.closest('#flappyContainer')) el.addEventListener('mousedown', playUIClick);
     });
-    // LEADERBOARD
+    // LEADERBOARD z leaderboard.txt v repozitáři
     const leaderboardBox = document.getElementById('leaderboardBox');
     const leaderboardList = document.getElementById('leaderboardList');
     const showLeaderboardBtn = document.getElementById('showLeaderboardBtn');
     const closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
-    function saveLeaderboard(lb) {
-      localStorage.setItem('flappyLeaderboard', JSON.stringify(lb));
-    }
-    function loadLeaderboard() {
-      return JSON.parse(localStorage.getItem('flappyLeaderboard')||'[]');
-    }
-    function addScoreToLeaderboard(nick, score) {
-      let lb = loadLeaderboard();
-      lb.push({ nick, score, time: Date.now() });
-      lb.sort((a,b) => b.score - a.score || a.time - b.time);
-      lb = lb.slice(0,5);
-      saveLeaderboard(lb);
-      return lb;
-    }
-    function showLeaderboard() {
-      let lb = loadLeaderboard();
-      leaderboardList.innerHTML = lb.length ? lb.map((item,i) => `
-        <li><span>${i+1}.</span> <span class="lb-nick">${item.nick||'Anonym'}</span> <span class="lb-score">${item.score}</span></li>
-      `).join('') : '<li>Žádné skóre</li>';
+    async function showLeaderboard() {
+      leaderboardList.innerHTML = '<li>Načítám…</li>';
       leaderboardBox.style.display = 'block';
+      // URL na RAW leaderboard.txt v repo:
+      const url = 'https://raw.githubusercontent.com/Shipeast/stream/main/leaderboard.txt';
+      try {
+        const resp = await fetch(url, {cache:'no-store'});
+        if (!resp.ok) throw new Error('Nelze načíst leaderboard.txt');
+        const text = await resp.text();
+        const lines = text.trim().split('\n').filter(Boolean);
+        if (lines.length === 0) leaderboardList.innerHTML = '<li>Žádné skóre</li>';
+        else leaderboardList.innerHTML = lines.map((line, i) => {
+          const [nick, score] = line.trim().split(/\s+/,2);
+          return `<li><span>${i+1}.</span> <span class="lb-nick">${nick}</span> <span class="lb-score">${score||""}</span></li>`;
+        }).join('');
+      } catch(e) {
+        leaderboardList.innerHTML = '<li>Chyba načítání leaderboardu</li>';
+      }
     }
     showLeaderboardBtn.onclick = function() { showLeaderboard(); leaderboardBox.scrollIntoView({behavior:'smooth'}) }
     closeLeaderboardBtn.onclick = function() { leaderboardBox.style.display = 'none'; }
@@ -646,7 +644,7 @@
     updateCursorTheme();
     // Světlý/tmavý theme update pro kurzor
     new MutationObserver(updateCursorTheme).observe(document.body, {attributes:true, attributeFilter:['class']});
-    // Flappy Bird overlay toggle (jednodušší verze + leaderboard)
+    // Flappy Bird overlay toggle (jednodušší verze)
     const flappyBtn = document.getElementById('flappyBtn');
     const flappyContainer = document.getElementById('flappyContainer');
     const backBtn = document.getElementById('backBtn');
@@ -788,13 +786,6 @@
         setTimeout(() => flappyContainer.classList.remove('active'), 400);
       }
     }
-    // LEADERBOARD dialog při smrti
-    function askNickAndSaveScore(finalScore) {
-      let nick = prompt('Zadej přezdívku pro leaderboard (nebo nech prázdné):');
-      if (nick && nick.length > 16) nick = nick.slice(0,16);
-      addScoreToLeaderboard(nick||'Anonym', finalScore);
-      showLeaderboard();
-    }
     function loop() {
       ctx.clearRect(0, 0, cw, ch);
       drawBackground();
@@ -812,7 +803,6 @@
           setTimeout(()=>{ dieSound.currentTime=0; dieSound.play(); }, 70);
           playing = false;
           restartBtn.style.display = 'inline-block';
-          setTimeout(()=>askNickAndSaveScore(score),200);
         }
         if (playing && pipes[i].x + pipeWidth < bird.x && !pipes[i].passed) {
           score++;
@@ -832,7 +822,6 @@
         setTimeout(()=>{ dieSound.currentTime=0; dieSound.play(); }, 70);
         playing = false;
         restartBtn.style.display = 'inline-block';
-        setTimeout(()=>askNickAndSaveScore(score),200);
       }
       if (!dead && bird.y < -bird.h) {
         dead = true;
@@ -840,7 +829,6 @@
         setTimeout(()=>{ dieSound.currentTime=0; dieSound.play(); }, 70);
         playing = false;
         restartBtn.style.display = 'inline-block';
-        setTimeout(()=>askNickAndSaveScore(score),200);
       }
       updateGui();
       frame++;
