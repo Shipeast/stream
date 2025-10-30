@@ -1,0 +1,3 @@
+Filip 10
+Honza 8
+Adam 5
