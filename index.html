@@ -14,36 +14,22 @@
       --card: rgba(255,255,255,0.22);
       --radius: 22px;
       --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
-      --cursor: #fff;
-      --cursor-shadow: 0 0 16px 6px #fff9;
-      --fg: #222;
       font-family: 'Poppins', sans-serif;
-    }
-    .dark {
-      --bg: linear-gradient(120deg, #14181f 0%, #22252c 100%);
-      --glass: rgba(32,32,28,0.13);
-      --accent: #ffd300;
-      --muted: #a0aab5;
-      --card: rgba(34,34,34,0.22);
-      --radius: 22px;
-      --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.13);
-      --cursor: #111;
-      --cursor-shadow: 0 0 16px 7px #000c;
-      --fg: #f1f1f1;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
     body {
       min-height: 100vh;
       background: var(--bg);
-      color: var(--fg);
+      color: #25304a;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       overflow-x: hidden;
-      transition: background 0.9s cubic-bezier(.7,.2,.4,1.02), color .3s;
+      transition: background 0.9s cubic-bezier(.7,.2,.4,1.02);
     }
+
     .container {
       width: 100%;
       max-width: 1000px;
@@ -66,6 +52,7 @@
       from { opacity: 0; transform: translateY(40px);}
       to { opacity: 1; transform: none;}
     }
+
     header h1 {
       font-size: clamp(2.1rem, 5vw, 3.3rem);
       font-weight: 700;
@@ -81,6 +68,7 @@
       100% { opacity: 1; transform: scale(1);}
     }
     header p { color: var(--muted); margin-top: 4px; font-size: clamp(1.01rem, 2vw, 1.18rem); }
+
     .grid {
       display: flex;
       flex-wrap: wrap;
@@ -89,6 +77,7 @@
       margin: 52px 0 10px 0;
       width: 100%;
     }
+
     .card {
       background: var(--card);
       border-radius: var(--radius);
@@ -162,6 +151,7 @@
       box-shadow: 0 0.5px 4px #e0da008a;
     }
     .mini-btn:hover { background: #ffd300; color: #222; }
+
     .mode-switch-container {
       position: fixed;
       top: 20px;
@@ -211,144 +201,41 @@
       white-space: nowrap;
       margin-left: 2px;
     }
-    /* Dark/Light theme switch */
-    .theme-switch-container {
-      position: fixed;
-      top: 20px;
-      left: 26px;
-      z-index: 1500;
-      opacity: 0.56;
-      background: rgba(0,0,0,0.13);
-      border-radius: 16px;
-      padding: 5px 14px 5px 10px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-      transition: opacity 0.27s;
+
+    footer {
+      margin-top: 46px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 8px;
-      pointer-events: auto;
-      min-width: 0;
+      gap: 14px;
+      font-size: 1.02rem;
+      opacity: 0.98;
+      z-index: 2;
+      position: relative;
     }
-    .theme-switch-container:hover {
-      opacity: 1;
-      background: rgba(0,0,0,0.18);
+
+    .socials {
+      display: flex;
+      gap: 20px;
     }
-    #themeSwitch {
-      background: none;
+    .socials a {
       color: var(--accent);
-      border: none;
+      text-decoration: none;
       font-weight: 700;
-      font-size: 1.18rem;
-      border-radius: 8px;
-      cursor: pointer;
-      padding: 3px 7px;
-      outline: none;
-      opacity: 0.8;
-      transition: background 0.2s;
+      font-size: 1.21rem;
+      background: rgba(255, 211, 0, 0.10);
+      padding: 10px 18px;
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(.45,1.3,.7,1.05);
+      box-shadow: 0 0 10px rgba(255, 211, 0, 0.12);
     }
-    #themeSwitch[aria-pressed="true"] {
-      color: #0b0d10;
-      background: #ffd300;
-      opacity: 0.93;
-    }
-    #themeSwitch:focus {
-      outline: 2px solid var(--accent);
-    }
-    #themeLabel {
-      color: var(--muted);
-      font-size: 0.97rem;
-      font-weight: 600;
-      white-space: nowrap;
-      margin-left: 2px;
-    }
-    /* Leaderboard styles */
-    #leaderboardBox {
-      margin: 32px auto 0 auto;
-      max-width: 400px;
-      background: var(--card);
-      border-radius: 16px;
-      box-shadow: 0 2px 18px #ffd30022, 0 1px 6px #0001;
-      padding: 20px 15px 8px 15px;
-      text-align: left;
-      color: var(--fg);
-      border: 2px solid var(--accent);
-      display: none;
-      transition: background 0.25s;
-    }
-    #leaderboardBox h2 {
-      text-align: center;
-      font-size: 1.25rem;
-      margin-bottom: 17px;
-      color: var(--accent);
-    }
-    #leaderboardList {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    #leaderboardList li {
-      display: flex;
-      align-items: center;
-      gap: 17px;
-      font-size: 1.11rem;
-      padding: 6px 0;
-      border-bottom: 1px solid var(--glass);
-    }
-    #leaderboardList li span.lb-nick {
-      font-weight: 600;
-      min-width: 68px;
-      color: var(--fg);
-    }
-    #leaderboardList li span.lb-score {
-      color: var(--accent); font-weight:700;
-    }
-    #closeLeaderboardBtn {
-      float:right;
-      background: none;
-      color: var(--muted);
-      border:none;
-      font-size:1.3rem;
-      cursor:pointer;
-      padding:0 7px;
-      margin-top:-7px;
-      margin-right:-6px;
-      border-radius:8px;
-    }
-    #closeLeaderboardBtn:hover { color:var(--accent); background: var(--glass);}
-    #showLeaderboardBtn {
-      margin: 20px 0 0 0;
+    .socials a:hover {
       background: var(--accent);
       color: #0b0d10;
-      border: none;
-      border-radius: 8px;
-      font-weight: 700;
-      padding: 9px 18px;
-      font-size: 1.08rem;
-      cursor: pointer;
-      box-shadow: 0 1px 8px #ffd30040;
-      transition: background 0.2s;
-      display:inline-block;
+      box-shadow: 0 0 24px #ffd3003a;
+      transform: scale(1.07);
     }
-    #showLeaderboardBtn:hover { background: #fff6b3; }
-    /* Vlastní kurzor */
-    #custom-cursor {
-      position: fixed;
-      z-index: 50000;
-      pointer-events: none;
-      width: 19px;
-      height: 19px;
-      border-radius: 50%;
-      background: var(--cursor);
-      box-shadow: var(--cursor-shadow);
-      transition: background 0.22s, box-shadow 0.21s;
-      mix-blend-mode: difference;
-      left: 0; top:0;
-      transform: translate(-50%, -50%);
-      will-change: left,top;
-      opacity: 0.87;
-      filter: blur(0.5px);
-    }
-    body, html { cursor: none; }
+
     /* Flappy Bird overlay */
     #flappyContainer {
       position: fixed;
@@ -415,6 +302,7 @@
       transition: background 0.2s;
     }
     #restartBtn:hover { background: #fff6b3; }
+
     @media (max-width: 850px) {
       .container { margin: 20px 0; }
       .grid { gap: 20px; }
@@ -429,35 +317,33 @@
       footer { font-size: 0.85rem; margin-top: 22px;}
       .socials a { font-size: 0.98rem; padding: 8px 14px; }
       #backBtn { font-size: 1.37rem; }
-      #modeLabel, #themeLabel { font-size: 0.9rem; }
-      .mode-switch-container, .theme-switch-container {
+      #modeLabel { font-size: 0.9rem; }
+      .mode-switch-container {
         top: 8px;
         right: 4px;
         padding: 1px 7px 1px 2px;
       }
       #flappyGui { top: 36px; font-size: 1.07rem; }
       #restartBtn { font-size: 0.97rem; }
-      #leaderboardBox { padding: 13px 2vw 7px 2vw;}
     }
   </style>
 </head>
 <body>
-  <div class="theme-switch-container">
-    <button id="themeSwitch" aria-pressed="false" title="Přepnout světlý/tmavý režim">🌓</button>
-    <span id="themeLabel">Světlo</span>
-  </div>
   <div class="container">
     <header>
       <h1>Hraj se mnou!</h1>
       <p>Vyber si hru nebo si zkrať čekání minihrou 🎮</p>
     </header>
+
     <div class="mode-switch-container">
-      <button id="modeSwitch" aria-pressed="false" title="Přepnout režim">👤</button>
+      <button id="modeSwitch" aria-pressed="false" title="Přepnout režim">🌓</button>
       <span id="modeLabel">Režim: Divák</span>
     </div>
+
     <div class="grid">
       <div class="card" tabindex="0">
         <div class="card-illu">
+          <!-- SVG ikonka Kahoot -->
           <svg viewBox="0 0 58 62" fill="none" style="height:54px" xmlns="http://www.w3.org/2000/svg">
             <rect x="4" y="5" width="50" height="50" rx="13" fill="#fff6b3"/>
             <rect x="9" y="10" width="40" height="40" rx="10" fill="#ffd300"/>
@@ -470,6 +356,7 @@
       </div>
       <div class="card" tabindex="0">
         <div class="card-illu">
+          <!-- SVG ikonka Globe -->
           <svg viewBox="0 0 58 62" fill="none" style="height:54px" xmlns="http://www.w3.org/2000/svg">
             <circle cx="29" cy="30" r="23" fill="#b8f2ff" stroke="#94e0ff" stroke-width="2"/>
             <ellipse cx="29" cy="30" rx="18" ry="23" fill="#fff" fill-opacity="0.25"/>
@@ -484,6 +371,7 @@
       </div>
       <div class="card" tabindex="0">
         <div class="card-illu">
+          <!-- SVG ikonka štětce -->
           <svg viewBox="0 0 58 62" fill="none" style="height:54px" xmlns="http://www.w3.org/2000/svg">
             <rect x="10" y="10" width="38" height="38" rx="11" fill="#ffe16e"/>
             <rect x="17" y="22" width="12" height="5" rx="2.5" fill="#fff"/>
@@ -499,6 +387,7 @@
       </div>
       <div class="card" style="background:rgba(255,255,255,0.18)" tabindex="0">
         <div class="card-illu">
+          <!-- SVG ptáček -->
           <svg viewBox="0 0 58 62" fill="none" style="height:54px" xmlns="http://www.w3.org/2000/svg">
             <ellipse cx="29" cy="34" rx="18" ry="16" fill="#ffe16e"/>
             <ellipse cx="35" cy="31" rx="6" ry="5" fill="#fff7b7"/>
@@ -514,12 +403,7 @@
         <button id="flappyBtn" class="mini-btn">🐤 Hrát při čekání</button>
       </div>
     </div>
-    <button id="showLeaderboardBtn">🥇 Zobrazit leaderboard</button>
-    <div id="leaderboardBox">
-      <button id="closeLeaderboardBtn" title="Zavřít">✕</button>
-      <h2>🥇 Nejlepší skóre (Flappy Bird)</h2>
-      <ol id="leaderboardList"></ol>
-    </div>
+
     <footer>
       <div class="socials">
         <a href="https://www.tiktok.com/@nejlepsi_vlakaci" target="_blank">TikTok</a>
@@ -528,7 +412,7 @@
       <div>Vytvořeno pro stream • Režim: <span id="footerMode">Divák</span></div>
     </footer>
   </div>
-  <div id="custom-cursor"></div>
+
   <!-- Flappy Bird overlay -->
   <div id="flappyContainer">
     <button id="backBtn" title="Zpět">🏠</button>
@@ -539,34 +423,15 @@
     </div>
     <canvas id="flappyCanvas"></canvas>
   </div>
-  <!-- Zvuky pro Flappy Bird + UI -->
+
+  <!-- Zvuky pro Flappy Bird -->
   <audio id="flapSound" src="https://cdn.jsdelivr.net/gh/robertlong/flappy-bird-assets/audio/wing.ogg"></audio>
   <audio id="scoreSound" src="https://cdn.jsdelivr.net/gh/robertlong/flappy-bird-assets/audio/point.ogg"></audio>
   <audio id="hitSound" src="https://cdn.jsdelivr.net/gh/robertlong/flappy-bird-assets/audio/hit.ogg"></audio>
   <audio id="dieSound" src="https://cdn.jsdelivr.net/gh/robertlong/flappy-bird-assets/audio/die.ogg"></audio>
-  <audio id="uiClickSound" src="https://cdn.pixabay.com/audio/2022/10/16/audio_12a7cf7a6f.mp3"></audio>
+
   <script>
-    // SVĚTLÝ/TMAVÝ REŽIM
-    const themeSwitch = document.getElementById('themeSwitch');
-    const themeLabel = document.getElementById('themeLabel');
-    function setTheme(dark) {
-      document.body.classList.toggle('dark', dark);
-      themeSwitch.setAttribute('aria-pressed', dark);
-      themeLabel.textContent = dark ? 'Tma' : 'Světlo';
-      localStorage.setItem('theme', dark ? 'dark' : 'light');
-      // update custom cursor color
-      cursor.style.background = getComputedStyle(document.body).getPropertyValue('--cursor');
-      cursor.style.boxShadow = getComputedStyle(document.body).getPropertyValue('--cursor-shadow');
-    }
-    let preferDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    let dark = localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && preferDark);
-    setTheme(dark);
-    themeSwitch.onclick = function() {
-      dark = !dark;
-      setTheme(dark);
-      playUIClick();
-    }
-    // MODE SWITCH (Divák / Streamer)
+    // Mode switch (Divák / Streamer)
     const MODES = {
       viewer: { name: 'Divák', links: ['https://kahoot.it','https://openguessr.com/multiplayer/join','https://www.drawize.com/play'] },
       streamer: { name: 'Streamer', links: ['https://kahoot.com','https://openguessr.com/multiplayer/host','https://www.drawize.com/play'] }
@@ -593,57 +458,8 @@
       const curr = localStorage.getItem('hraj-se-mnou-mode') === 'streamer' ? 'streamer' : 'viewer';
       const next = curr === 'streamer' ? 'viewer' : 'streamer';
       setMode(next);
-      playUIClick();
     });
-    // UI ZVUKY
-    const uiClickSound = document.getElementById('uiClickSound');
-    function playUIClick() { try { uiClickSound.currentTime=0; uiClickSound.play(); } catch(e){} }
-    // Přidat zvuk na všechna tlačítka kromě canvasu a Flappy Bird
-    document.querySelectorAll('button, a.play-btn, a').forEach(el => {
-      if (!el.closest('#flappyContainer')) el.addEventListener('mousedown', playUIClick);
-    });
-    // LEADERBOARD z leaderboard.txt v repozitáři
-    const leaderboardBox = document.getElementById('leaderboardBox');
-    const leaderboardList = document.getElementById('leaderboardList');
-    const showLeaderboardBtn = document.getElementById('showLeaderboardBtn');
-    const closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
-    async function showLeaderboard() {
-      leaderboardList.innerHTML = '<li>Načítám…</li>';
-      leaderboardBox.style.display = 'block';
-      // URL na RAW leaderboard.txt v repo:
-      const url = 'https://raw.githubusercontent.com/Shipeast/stream/main/leaderboard.txt';
-      try {
-        const resp = await fetch(url, {cache:'no-store'});
-        if (!resp.ok) throw new Error('Nelze načíst leaderboard.txt');
-        const text = await resp.text();
-        const lines = text.trim().split('\n').filter(Boolean);
-        if (lines.length === 0) leaderboardList.innerHTML = '<li>Žádné skóre</li>';
-        else leaderboardList.innerHTML = lines.map((line, i) => {
-          const [nick, score] = line.trim().split(/\s+/,2);
-          return `<li><span>${i+1}.</span> <span class="lb-nick">${nick}</span> <span class="lb-score">${score||""}</span></li>`;
-        }).join('');
-      } catch(e) {
-        leaderboardList.innerHTML = '<li>Chyba načítání leaderboardu</li>';
-      }
-    }
-    showLeaderboardBtn.onclick = function() { showLeaderboard(); leaderboardBox.scrollIntoView({behavior:'smooth'}) }
-    closeLeaderboardBtn.onclick = function() { leaderboardBox.style.display = 'none'; }
-    // VLASTNÍ KURZOR
-    const cursor = document.getElementById('custom-cursor');
-    let cursorX = window.innerWidth/2, cursorY = window.innerHeight/2;
-    document.addEventListener('mousemove', e => {
-      cursorX = e.clientX; cursorY = e.clientY;
-      cursor.style.left = cursorX + 'px';
-      cursor.style.top = cursorY + 'px';
-    });
-    // Dynamický update barvy kurzoru při změně režimu
-    function updateCursorTheme() {
-      cursor.style.background = getComputedStyle(document.body).getPropertyValue('--cursor');
-      cursor.style.boxShadow = getComputedStyle(document.body).getPropertyValue('--cursor-shadow');
-    }
-    updateCursorTheme();
-    // Světlý/tmavý theme update pro kurzor
-    new MutationObserver(updateCursorTheme).observe(document.body, {attributes:true, attributeFilter:['class']});
+
     // Flappy Bird overlay toggle (jednodušší verze)
     const flappyBtn = document.getElementById('flappyBtn');
     const flappyContainer = document.getElementById('flappyContainer');
@@ -652,19 +468,23 @@
     const ctx = canvas.getContext('2d');
     let cw = canvas.width = window.innerWidth;
     let ch = canvas.height = window.innerHeight;
+
     // Zvuky
     const flapSound = document.getElementById('flapSound');
     const scoreSound = document.getElementById('scoreSound');
     const hitSound = document.getElementById('hitSound');
     const dieSound = document.getElementById('dieSound');
+
     // GUI elements
     const gui = document.getElementById('flappyGui');
     const scoreText = document.getElementById('scoreText');
     const highScoreText = document.getElementById('highScoreText');
     const restartBtn = document.getElementById('restartBtn');
+
     // Jednodušší ptáček a mechanika
     const birdBase = { w: 44, h: 34 };
     const bird = { x: 130, y: ch/2, w: birdBase.w, h: birdBase.h, gravity: 0.38, lift: -10.5, velocity: 0, anim: 0 };
+
     // Trubky
     const pipes = [];
     const pipeWidth = 88;
@@ -675,8 +495,10 @@
     let playing = false;
     let dead = false;
     let animationId;
+
     const pipeSpeed = 2.3; // pomalejší pohyb trubek
     const firstPipeDelay = 170; // první pipe přijde později
+
     // Ovládání
     function flap() {
       if (!playing) { startGame(); return; }
@@ -692,6 +514,7 @@
     });
     canvas.addEventListener('click', flap);
     canvas.addEventListener('touchstart', e => { e.preventDefault(); flap(); });
+
     // Reset hry
     function resetGame() {
       bird.y = ch/2;
@@ -702,12 +525,14 @@
       dead = false;
       updateGui();
     }
+
     function restartGame() {
       resetGame();
       playing = true;
       restartBtn.style.display = 'none';
       loop();
     }
+
     // Start hry
     function startGame() {
       resetGame();
@@ -716,18 +541,21 @@
       gui.style.opacity = 1;
       loop();
     }
+
     window.addEventListener('resize', () => {
       cw = canvas.width = window.innerWidth;
       ch = canvas.height = window.innerHeight;
       resetGame();
       if (playing) loop();
     });
+
     // Generování trubek
     function addPipe() {
       const minY = 50, maxY = ch - gap - 120;
       const top = Math.random() * (maxY - minY) + minY;
       pipes.push({ x: cw, top: top, bottom: top + gap, passed: false });
     }
+
     function drawBird() {
       ctx.save();
       ctx.translate(bird.x + bird.w/2, bird.y + bird.h/2);
@@ -749,6 +577,7 @@
       ctx.fill();
       ctx.restore();
     }
+
     function drawPipe(pipe) {
       ctx.save();
       ctx.globalAlpha = 0.18;
@@ -763,6 +592,7 @@
       ctx.fillRect(pipe.x, pipe.top-18, pipeWidth, 18);
       ctx.fillRect(pipe.x, pipe.bottom, pipeWidth, 18);
     }
+
     function drawBackground() {
       ctx.fillStyle = "#a1eaff";
       ctx.fillRect(0, 0, cw, ch);
@@ -773,10 +603,12 @@
         ctx.fillRect(i*80+30, ch-40, 50, 12);
       }
     }
+
     function updateGui() {
       scoreText.textContent = `Score: ${score}`;
       highScoreText.textContent = `Highscore: ${highScore}`;
     }
+
     function showFlappyOverlay(show=true) {
       if (show) {
         flappyContainer.classList.add('active');
@@ -786,13 +618,17 @@
         setTimeout(() => flappyContainer.classList.remove('active'), 400);
       }
     }
+
     function loop() {
       ctx.clearRect(0, 0, cw, ch);
       drawBackground();
+
       bird.velocity += bird.gravity;
       bird.y += bird.velocity;
       drawBird();
+
       if ((frame % firstPipeDelay === 0 && pipes.length === 0) || (pipes.length > 0 && pipes[pipes.length-1].x < cw-340 && frame % 90 === 0)) addPipe();
+
       for (let i = pipes.length - 1; i >= 0; i--) {
         pipes[i].x -= pipeSpeed;
         drawPipe(pipes[i]);
@@ -816,6 +652,7 @@
         }
         if (pipes[i].x + pipeWidth < 0) pipes.splice(i, 1);
       }
+
       if (!dead && bird.y + bird.h > ch-80) {
         dead = true;
         hitSound.currentTime = 0; hitSound.play();
@@ -834,6 +671,7 @@
       frame++;
       if (!dead && playing) animationId = requestAnimationFrame(loop);
     }
+
     flappyBtn.addEventListener('click', () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -850,12 +688,15 @@
       scoreText.textContent = "Space/click pro skok!";
       highScoreText.textContent = `Highscore: ${highScore}`;
     });
+
     backBtn.addEventListener('click', () => {
       showFlappyOverlay(false);
       cancelAnimationFrame(animationId);
       playing = false;
     });
+
     restartBtn.addEventListener('click', restartGame);
+
     flappyContainer.addEventListener('transitionend', () => {
       if (!flappyContainer.classList.contains('active')) gui.style.opacity = 0;
     });
