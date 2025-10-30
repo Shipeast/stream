@@ -2,7 +2,7 @@
 <html lang="cs">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Hraj se mnou!</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -29,11 +29,7 @@
 
     .container {
       width: 100%;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      max-width: 980px;
       padding: 20px;
       text-align: center;
       position: relative;
@@ -43,13 +39,9 @@
       font-size: clamp(2rem, 5vw, 3.2rem);
       font-weight: 700;
       color: var(--accent);
-      text-shadow: 0 0 15px rgba(255, 216, 77, 0.4);
+      text-shadow: 0 0 15px rgba(255, 211, 0, 0.4);
     }
-    header p {
-      color: var(--muted);
-      margin-top: 8px;
-      font-size: clamp(0.9rem, 2vw, 1.1rem);
-    }
+    header p { color: var(--muted); margin-top: 8px; font-size: clamp(0.9rem, 2vw, 1.1rem); }
 
     .mode-pill {
       position: absolute;
@@ -64,7 +56,6 @@
       transition: opacity 0.2s ease;
     }
     .mode-pill:hover { opacity: 1; }
-
     .mode-toggle {
       background: transparent;
       border: none;
@@ -94,19 +85,11 @@
     .card:hover {
       transform: translateY(-10px) scale(1.03);
       border-color: var(--accent);
-      box-shadow: 0 0 30px rgba(255, 216, 77, 0.2);
+      box-shadow: 0 0 30px rgba(255, 211, 0, 0.2);
     }
 
-    .game-title {
-      font-weight: 600;
-      font-size: 1.3rem;
-      margin-bottom: 6px;
-    }
-    .game-desc {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-bottom: 14px;
-    }
+    .game-title { font-weight: 600; font-size: 1.3rem; margin-bottom: 6px; }
+    .game-desc { color: var(--muted); font-size: 0.9rem; margin-bottom: 14px; }
     .play-btn, .mini-btn {
       background: var(--accent);
       color: #0b0d10;
@@ -119,13 +102,10 @@
       display: inline-block;
       cursor: pointer;
     }
-    .play-btn:hover, .mini-btn:hover {
-      transform: scale(1.05);
-    }
+    .play-btn:hover, .mini-btn:hover { transform: scale(1.05); }
 
     footer {
-      position: absolute;
-      bottom: 20px;
+      margin-top: 40px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -142,16 +122,16 @@
       text-decoration: none;
       font-weight: 700;
       font-size: 1.2rem;
-      background: rgba(255, 216, 77, 0.1);
+      background: rgba(255, 211, 0, 0.1);
       padding: 10px 18px;
       border-radius: 10px;
       transition: all 0.3s ease;
-      box-shadow: 0 0 10px rgba(255, 216, 77, 0.2);
+      box-shadow: 0 0 10px rgba(255, 211, 0, 0.2);
     }
     .socials a:hover {
       background: var(--accent);
       color: #0b0d10;
-      box-shadow: 0 0 20px rgba(255, 216, 77, 0.4);
+      box-shadow: 0 0 20px rgba(255, 211, 0, 0.4);
       transform: scale(1.05);
     }
 
@@ -165,21 +145,12 @@
       justify-content: center;
       align-items: center;
       z-index: 1000;
-      overflow: hidden;
     }
-    canvas {
-      background: #0b0d10;
-      display: block;
+    #dinoOverlay iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
-    .loader {
-      width: 60px;
-      height: 60px;
-      border: 6px solid rgba(255,255,255,0.1);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
 
     @media (max-width: 600px) {
       .grid { gap: 18px; }
@@ -205,17 +176,17 @@
       <div class="card">
         <div class="game-title">Kahoot</div>
         <div class="game-desc">Zábavný kvíz pro všechny</div>
-        <a id="link1" class="play-btn" href="#" target="_blank">Hrát</a>
+        <a id="link1" class="play-btn" href="https://kahoot.it" target="_blank">Hrát</a>
       </div>
       <div class="card">
         <div class="game-title">OpenGuessr</div>
         <div class="game-desc">Hádej, kde na světě jsi!</div>
-        <a id="link2" class="play-btn" href="#" target="_blank">Hrát</a>
+        <a id="link2" class="play-btn" href="https://openguessr.com/multiplayer/join" target="_blank">Hrát</a>
       </div>
       <div class="card">
         <div class="game-title">Drawize</div>
         <div class="game-desc">Kresli a hádej s ostatními</div>
-        <a id="link3" class="play-btn" href="#" target="_blank">Hrát</a>
+        <a id="link3" class="play-btn" href="https://www.drawize.com/play" target="_blank">Hrát</a>
       </div>
       <button id="dinoBtn" class="mini-btn">🦖 Hrát při čekání</button>
     </div>
@@ -230,8 +201,7 @@
   </div>
 
   <div id="dinoOverlay">
-    <div class="loader"></div>
-    <canvas id="dinoCanvas" width="800" height="200"></canvas>
+    <iframe src="https://alexelzx.github.io/chrome-dino/dino.html"></iframe>
   </div>
 
   <script>
@@ -240,40 +210,31 @@
       viewer: { name: 'Divák', links: ['https://kahoot.it','https://openguessr.com/multiplayer/join','https://www.drawize.com/play'] },
       streamer: { name: 'Streamer', links: ['https://kahoot.com','https://openguessr.com/multiplayer/host','https://www.drawize.com/play'] }
     };
-    const modeKey='hraj-se-mnou-mode';
     const linkEls=[document.getElementById('link1'),document.getElementById('link2'),document.getElementById('link3')];
     const modeLabel=document.getElementById('modeLabel');
     const footerMode=document.getElementById('footerMode');
     const switchBtn=document.getElementById('modeSwitch');
-    function setMode(mode){const m=MODES[mode]||MODES.viewer;linkEls.forEach((el,i)=>el.href=m.links[i]);modeLabel.textContent='Režim: '+m.name;footerMode.textContent=m.name;try{localStorage.setItem(modeKey,mode)}catch(e){}}
-    const saved=localStorage.getItem(modeKey)||'viewer';setMode(saved);
-    switchBtn.addEventListener('click',()=>{const curr=localStorage.getItem(modeKey)==='streamer'?'streamer':'viewer';const next=curr==='streamer'?'viewer':'streamer';setMode(next);switchBtn.animate([{transform:'scale(1)'},{transform:'scale(0.9)'},{transform:'scale(1)'}],{duration:150});});
+    function setMode(mode){
+      const m=MODES[mode]||MODES.viewer;
+      linkEls.forEach((el,i)=>el.href=m.links[i]);
+      modeLabel.textContent='Režim: '+m.name;
+      footerMode.textContent=m.name;
+      try{localStorage.setItem('hraj-se-mnou-mode',mode);}catch(e){}
+      switchBtn.setAttribute('aria-pressed',mode==='streamer');
+    }
+    const saved=(function(){try{return localStorage.getItem('hraj-se-mnou-mode')}catch(e){return null}})()||'viewer';
+    setMode(saved);
+    switchBtn.addEventListener('click',()=>{
+      const curr=localStorage.getItem('hraj-se-mnou-mode')==='streamer'?'streamer':'viewer';
+      const next=curr==='streamer'?'viewer':'streamer';
+      setMode(next);
+    });
 
-    // Dino Runner overlay
+    // Dino overlay
     const dinoBtn=document.getElementById('dinoBtn');
     const dinoOverlay=document.getElementById('dinoOverlay');
-    const canvas=document.getElementById('dinoCanvas');
-    const ctx=canvas.getContext('2d');
-    let dinoY=150,dinoV=0,gravity=0.6,jumping=false,obstacles=[],frame=0,score=0,highscore=localStorage.getItem('dinoHigh')||0;
-
-    function resetGame(){dinoY=150;dinoV=0;jumping=false;obstacles=[];frame=0;score=0;}
-
-    function spawnObstacle(){if(frame%90===0){obstacles.push({x:canvas.width,y:150,width:20,height:40});}}
-
-    function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#ffd84d';ctx.fillRect(50,dinoY,30,30);obstacles.forEach(o=>{ctx.fillRect(o.x,o.y,o.width,o.height);});ctx.fillStyle='#ffd84d';ctx.font='20px Poppins';ctx.fillText('Score: '+score,canvas.width-150,30);ctx.fillText('Highscore: '+highscore,canvas.width-150,60);}
-
-    function update(){dinoV+=gravity;dinoY+=dinoV;if(dinoY>150){dinoY=150;dinoV=0;jumping=false;}obstacles.forEach(o=>{o.x-=6;});obstacles=obstacles.filter(o=>o.x+o.width>0);obstacles.forEach(o=>{if(50<o.x+o.width && 50+30>o.x && dinoY<o.y+o.height && dinoY+30>o.y){if(score>highscore){highscore=score;localStorage.setItem('dinoHigh',highscore);}resetGame();}});score++;}
-
-    function loop(){spawnObstacle();update();draw();frame++;if(dinoOverlay.style.display==='flex'){requestAnimationFrame(loop);}}
-
-    function startDino(){dinoOverlay.style.display='flex';document.querySelector('.loader').style.display='none';resetGame();loop();}
-
-    dinoBtn.addEventListener('click',()=>{document.querySelector('.loader').style.display='block';setTimeout(startDino,300);});
-    window.addEventListener('keydown',(e)=>{if(e.code==='Space'){if(!jumping){dinoV=-12;jumping=true;}}});
-    canvas.addEventListener('touchstart',(e)=>{e.preventDefault();if(!jumping){dinoV=-12;jumping=true;}});
-
-    // Kliknutí mimo canvas ukončí overlay
-    dinoOverlay.addEventListener('click',(e)=>{if(e.target===dinoOverlay){dinoOverlay.style.display='none';}});
+    dinoBtn.addEventListener('click',()=>{ dinoOverlay.style.display='flex'; });
+    dinoOverlay.addEventListener('click',(e)=>{ if(e.target===dinoOverlay){ dinoOverlay.style.display='none'; } });
   </script>
 </body>
 </html>
