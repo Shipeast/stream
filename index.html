@@ -82,30 +82,55 @@
     }
     .play-btn:hover, .mini-btn:hover { transform: scale(1.05); }
 
+    /* Decentní mode switch vpravo nahoře */
     .mode-switch-container {
-      margin-top: 24px;
+      position: fixed;
+      top: 22px;
+      right: 24px;
+      z-index: 1500;
+      opacity: 0.5;
+      background: rgba(0,0,0,0.13);
+      border-radius: 16px;
+      padding: 5px 14px 5px 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+      transition: opacity 0.25s;
       display: flex;
-      justify-content: center;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      pointer-events: auto;
+      min-width: 0;
+    }
+    .mode-switch-container:hover {
+      opacity: 1;
+      background: rgba(0,0,0,0.22);
     }
     #modeSwitch {
-      background: var(--accent);
-      color: #0b0d10;
+      background: none;
+      color: var(--accent);
       border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
+      padding: 3px 9px;
+      outline: none;
+      transition: background 0.2s;
+      opacity: 0.7;
     }
     #modeSwitch[aria-pressed="true"] {
-      background: #fff6b3;
+      color: #0b0d10;
+      background: #ffd300;
+      opacity: 0.95;
+    }
+    #modeSwitch:focus {
+      outline: 2px solid var(--accent);
     }
     #modeLabel {
       color: var(--muted);
-      font-size: 1rem;
+      font-size: 0.94rem;
       font-weight: 600;
+      white-space: nowrap;
+      margin-left: 2px;
     }
 
     footer {
@@ -145,26 +170,66 @@
       top: 0; left: 0;
       width: 100vw;
       height: 100vh;
-      background: #0b0d10;
+      background: linear-gradient(180deg, #77b8ff 0%, #a1eaff 100%);
       display: none;
       justify-content: center;
       align-items: center;
       flex-direction: column;
       z-index: 1000;
       pointer-events: auto;
+      transition: opacity 0.4s;
+      opacity: 0;
+    }
+    #flappyContainer.active {
+      display: flex;
+      opacity: 1;
     }
     #backBtn {
       position: absolute;
       top: 16px;
       left: 16px;
-      font-size: 1.8rem;
+      font-size: 2.1rem;
       color: var(--accent);
-      background: transparent;
+      background: rgba(0,0,0,0.07);
       border: none;
       cursor: pointer;
       z-index: 1010;
+      border-radius: 8px;
+      padding: 4px 13px 4px 7px;
+      line-height: 1;
+      transition: background 0.2s;
     }
-    canvas { display: block; }
+    #backBtn:hover { background: rgba(0,0,0,0.18); }
+    canvas { display: block; background: none; }
+    #flappyGui {
+      position: absolute;
+      top: 64px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1050;
+      font-size: 1.2rem;
+      color: #fff;
+      text-shadow: 0 2px 13px #0007;
+      text-align: center;
+      pointer-events: none;
+      background: none;
+    }
+    #restartBtn {
+      margin-top: 16px;
+      background: var(--accent);
+      color: #0b0d10;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      padding: 10px 22px;
+      font-size: 1.13rem;
+      cursor: pointer;
+      box-shadow: 0 1px 8px #0003;
+      display: none;
+      pointer-events: all;
+      transition: background 0.2s;
+    }
+    #restartBtn:hover { background: #fff6b3; }
 
     @media (max-width: 600px) {
       .grid { gap: 18px; }
@@ -173,6 +238,13 @@
       .socials a { font-size: 1rem; padding: 8px 14px; }
       #backBtn { font-size: 1.5rem; }
       #modeLabel { font-size: 0.9rem; }
+      .mode-switch-container {
+        top: 12px;
+        right: 8px;
+        padding: 2px 7px 2px 3px;
+      }
+      #flappyGui { top: 36px; font-size: 1.06rem; }
+      #restartBtn { font-size: 1rem; }
     }
   </style>
 </head>
@@ -184,7 +256,7 @@
     </header>
 
     <div class="mode-switch-container">
-      <button id="modeSwitch" aria-pressed="false">Přepnout režim</button>
+      <button id="modeSwitch" aria-pressed="false" title="Přepnout režim">🌓</button>
       <span id="modeLabel">Režim: Divák</span>
     </div>
 
@@ -218,9 +290,20 @@
 
   <!-- Flappy Bird overlay -->
   <div id="flappyContainer">
-    <button id="backBtn">🏠</button>
+    <button id="backBtn" title="Zpět">🏠</button>
+    <div id="flappyGui">
+      <div id="scoreText"></div>
+      <div id="highScoreText"></div>
+      <button id="restartBtn">Restart</button>
+    </div>
     <canvas id="flappyCanvas"></canvas>
   </div>
+
+  <!-- Zvuky pro Flappy Bird -->
+  <audio id="flapSound" src="https://cdn.jsdelivr.net/gh/robertlong/flappy-bird-assets/audio/wing.ogg"></audio>
+  <audio id="scoreSound" src="https://cdn.jsdelivr.net/gh/robertlong/flappy-bird-assets/audio/point.ogg"></audio>
+  <audio id="hitSound" src="https://cdn.jsdelivr.net/gh/robertlong/flappy-bird-assets/audio/hit.ogg"></audio>
+  <audio id="dieSound" src="https://cdn.jsdelivr.net/gh/robertlong/flappy-bird-assets/audio/die.ogg"></audio>
 
   <script>
     // Mode switch (Divák / Streamer)
@@ -261,20 +344,53 @@
     let cw = canvas.width = window.innerWidth;
     let ch = canvas.height = window.innerHeight;
 
+    // Zvuky
+    const flapSound = document.getElementById('flapSound');
+    const scoreSound = document.getElementById('scoreSound');
+    const hitSound = document.getElementById('hitSound');
+    const dieSound = document.getElementById('dieSound');
+
+    // GUI elements
+    const gui = document.getElementById('flappyGui');
+    const scoreText = document.getElementById('scoreText');
+    const highScoreText = document.getElementById('highScoreText');
+    const restartBtn = document.getElementById('restartBtn');
+
     // Hráč (ptáček)
-    const bird = { x: 150, y: ch/2, w: 34, h: 24, gravity: 0.6, lift: -12, velocity: 0 };
+    const birdBase = { w: 38, h: 28 };
+    const bird = { x: 150, y: ch/2, w: birdBase.w, h: birdBase.h, gravity: 0.62, lift: -12, velocity: 0, anim: 0 };
 
     // Trubky
     const pipes = [];
     const pipeWidth = 80;
-    const gap = 200;
+    const gap = 170;
     let frame = 0;
     let score = 0;
     let highScore = parseInt(localStorage.getItem('flappyHighscore') || '0');
+    let playing = false;
+    let dead = false;
+    let animationId;
+
+    // Barvy pro grafiku
+    const pipeGradient = ctx.createLinearGradient(0,0,0,200);
+    pipeGradient.addColorStop(0,'#ffe16e');
+    pipeGradient.addColorStop(1,'#ffd300');
+    const pipeShadow = 'rgba(0,0,0,0.15)';
+    const groundH = 80;
 
     // Ovládání
-    function flap() { bird.velocity = bird.lift; }
-    document.addEventListener('keydown', e => { if (e.code === 'Space') { flap(); } });
+    function flap() {
+      if (!playing) { startGame(); return; }
+      if (dead) return;
+      bird.velocity = bird.lift;
+      flapSound.currentTime = 0; flapSound.play();
+    }
+    document.addEventListener('keydown', e => {
+      if (flappyContainer.classList.contains('active')) {
+        if (e.code === 'Space' || e.key === ' ') { flap(); e.preventDefault(); }
+        if (e.code === 'KeyR' && dead) restartGame();
+      }
+    });
     canvas.addEventListener('click', flap);
     canvas.addEventListener('touchstart', e => { e.preventDefault(); flap(); });
 
@@ -285,6 +401,24 @@
       pipes.length = 0;
       score = 0;
       frame = 0;
+      dead = false;
+      updateGui();
+    }
+
+    function restartGame() {
+      resetGame();
+      playing = true;
+      restartBtn.style.display = 'none';
+      loop();
+    }
+
+    // Start hry
+    function startGame() {
+      resetGame();
+      playing = true;
+      restartBtn.style.display = 'none';
+      gui.style.opacity = 1;
+      loop();
     }
 
     // Změna velikosti canvasu při resize
@@ -292,78 +426,211 @@
       cw = canvas.width = window.innerWidth;
       ch = canvas.height = window.innerHeight;
       resetGame();
+      if (playing) loop();
     });
 
     // Generování trubek
     function addPipe() {
-      const top = Math.random() * (ch - gap - 200) + 50;
-      pipes.push({ x: cw, top: top, bottom: top + gap });
+      const minY = 40, maxY = ch - gap - groundH - 60;
+      const top = Math.random() * (maxY - minY) + minY;
+      pipes.push({ x: cw, top: top, bottom: top + gap, passed: false });
+    }
+
+    // Lepší ptáček (grafika)
+    function drawBird() {
+      ctx.save();
+      ctx.translate(bird.x + bird.w/2, bird.y + bird.h/2);
+      ctx.rotate(Math.min(Math.max(bird.velocity/22, -0.3), 0.5));
+      // tělo
+      ctx.beginPath();
+      ctx.ellipse(0, 0, bird.w/2, bird.h/2, 0, 0, 2*Math.PI);
+      ctx.fillStyle = '#ffe16e';
+      ctx.shadowColor = '#ffd300';
+      ctx.shadowBlur = 7;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      // oko
+      ctx.beginPath();
+      ctx.arc(bird.w/5, -bird.h/7, bird.h/5, 0, 2*Math.PI);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(bird.w/5 + 2, -bird.h/7, bird.h/10, 0, 2*Math.PI);
+      ctx.fillStyle = '#222';
+      ctx.fill();
+      // křídlo animace
+      ctx.save();
+      ctx.rotate(Math.sin(frame/5)*0.35 + 0.15);
+      ctx.beginPath();
+      ctx.ellipse(-bird.w/8, bird.h/8, bird.w/4, bird.h/4, 0, 0, 2*Math.PI);
+      ctx.fillStyle = '#fff7b7';
+      ctx.fill();
+      ctx.restore();
+      // zobák
+      ctx.beginPath();
+      ctx.moveTo(bird.w/2, 0);
+      ctx.lineTo(bird.w/2+12, -4);
+      ctx.lineTo(bird.w/2+7, 4);
+      ctx.closePath();
+      ctx.fillStyle = '#ffb300';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Lepší trubky
+    function drawPipe(pipe) {
+      // stín
+      ctx.save();
+      ctx.globalAlpha = 0.22;
+      ctx.fillStyle = pipeShadow;
+      ctx.fillRect(pipe.x+5, 0, pipeWidth, pipe.top+25);
+      ctx.fillRect(pipe.x+5, pipe.bottom-25, pipeWidth, ch-pipe.bottom+groundH);
+      ctx.restore();
+      // horní
+      ctx.fillStyle = pipeGradient;
+      ctx.fillRect(pipe.x, 0, pipeWidth, pipe.top);
+      ctx.fillStyle = '#e5bb00';
+      ctx.fillRect(pipe.x, pipe.top-25, pipeWidth, 25);
+      // spodní
+      ctx.fillStyle = pipeGradient;
+      ctx.fillRect(pipe.x, pipe.bottom, pipeWidth, ch - pipe.bottom - groundH);
+      ctx.fillStyle = '#e5bb00';
+      ctx.fillRect(pipe.x, pipe.bottom, pipeWidth, 25);
+    }
+
+    // Pozadí
+    function drawBackground() {
+      // mraky
+      for (let i = 0; i < 3; i++) {
+        ctx.save();
+        ctx.globalAlpha = 0.18;
+        ctx.beginPath();
+        ctx.arc((frame*0.7+150*i)%cw, 120+40*i, 80+30*i, 0, 2*Math.PI);
+        ctx.arc((frame*0.7+150*i+50)%cw, 160+40*i, 44+30*i, 0, 2*Math.PI);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+        ctx.restore();
+      }
+      // zem
+      ctx.fillStyle = '#ffd300';
+      ctx.fillRect(0, ch-groundH, cw, groundH);
+      ctx.fillStyle = '#d6b500';
+      for (let i = 0; i < cw/80; i++) {
+        ctx.fillRect(i*80+30, ch-groundH+40, 50, 14);
+      }
+    }
+
+    // GUI
+    function updateGui() {
+      scoreText.textContent = `Score: ${score}`;
+      highScoreText.textContent = `Highscore: ${highScore}`;
+    }
+
+    // Fade in/out animace overlay
+    function showFlappyOverlay(show=true) {
+      if (show) {
+        flappyContainer.classList.add('active');
+        setTimeout(() => flappyContainer.style.opacity = 1, 10);
+      } else {
+        flappyContainer.style.opacity = 0;
+        setTimeout(() => flappyContainer.classList.remove('active'), 400);
+      }
     }
 
     // Hlavní update a render loop
-    let animationId;
     function loop() {
-      ctx.fillStyle = '#0b0d10';
-      ctx.fillRect(0, 0, cw, ch);
+      ctx.clearRect(0, 0, cw, ch);
+      drawBackground();
 
       // ptáček
       bird.velocity += bird.gravity;
       bird.y += bird.velocity;
-      ctx.fillStyle = '#ffd300';
-      ctx.fillRect(bird.x, bird.y, bird.w, bird.h);
+      drawBird();
 
       // trubky
       if (frame % 90 === 0) addPipe();
       for (let i = pipes.length - 1; i >= 0; i--) {
         pipes[i].x -= 4;
-        ctx.fillStyle = '#ffd300';
-        ctx.fillRect(pipes[i].x, 0, pipeWidth, pipes[i].top);
-        ctx.fillRect(pipes[i].x, pipes[i].bottom, pipeWidth, ch - pipes[i].bottom);
+        drawPipe(pipes[i]);
 
         // kolize
-        if (bird.x + bird.w > pipes[i].x && bird.x < pipes[i].x + pipeWidth &&
+        if (!dead && bird.x + bird.w > pipes[i].x && bird.x < pipes[i].x + pipeWidth &&
             (bird.y < pipes[i].top || bird.y + bird.h > pipes[i].bottom)) {
-          resetGame();
+          dead = true;
+          hitSound.currentTime = 0; hitSound.play();
+          setTimeout(()=>{ dieSound.currentTime=0; dieSound.play(); }, 80);
+          playing = false;
+          restartBtn.style.display = 'inline-block';
         }
 
         // bodování
-        if (pipes[i].x + pipeWidth < bird.x && !pipes[i].passed) {
+        if (playing && pipes[i].x + pipeWidth < bird.x && !pipes[i].passed) {
           score++;
           pipes[i].passed = true;
-          if (score > highScore) { highScore = score; localStorage.setItem('flappyHighscore', highScore); }
+          scoreSound.currentTime = 0; scoreSound.play();
+          if (score > highScore) {
+            highScore = score;
+            localStorage.setItem('flappyHighscore', highScore);
+          }
+          updateGui();
         }
 
         if (pipes[i].x + pipeWidth < 0) pipes.splice(i, 1);
       }
 
       // zem
-      if (bird.y + bird.h > ch) resetGame();
+      if (!dead && bird.y + bird.h > ch-groundH) {
+        dead = true;
+        hitSound.currentTime = 0; hitSound.play();
+        setTimeout(()=>{ dieSound.currentTime=0; dieSound.play(); }, 80);
+        playing = false;
+        restartBtn.style.display = 'inline-block';
+      }
+      // horní okraj
+      if (!dead && bird.y < -bird.h) {
+        dead = true;
+        hitSound.currentTime = 0; hitSound.play();
+        setTimeout(()=>{ dieSound.currentTime=0; dieSound.play(); }, 80);
+        playing = false;
+        restartBtn.style.display = 'inline-block';
+      }
 
-      // skóre
-      ctx.fillStyle = '#ffd300';
-      ctx.font = '32px Poppins';
-      ctx.fillText(`Score: ${score}`, 20, 50);
-      ctx.fillText(`Highscore: ${highScore}`, 20, 90);
-
+      updateGui();
       frame++;
-      animationId = requestAnimationFrame(loop);
+      if (!dead && playing) animationId = requestAnimationFrame(loop);
     }
 
     // Spuštění hry po kliknutí na tlačítko
     flappyBtn.addEventListener('click', () => {
-      flappyContainer.style.display = 'flex';
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       cw = canvas.width;
       ch = canvas.height;
       resetGame();
-      loop();
+      frame = 0;
+      playing = false;
+      dead = false;
+      updateGui();
+      restartBtn.style.display = 'none';
+      showFlappyOverlay(true);
+      setTimeout(() => { gui.style.opacity = 1; }, 120);
+      // Zobraz instrukci
+      scoreText.textContent = "Space/click pro skok!";
+      highScoreText.textContent = `Highscore: ${highScore}`;
     });
 
     // Návrat zpět
     backBtn.addEventListener('click', () => {
-      flappyContainer.style.display = 'none';
+      showFlappyOverlay(false);
       cancelAnimationFrame(animationId);
+      playing = false;
+    });
+
+    restartBtn.addEventListener('click', restartGame);
+
+    // Hide GUI on overlay close
+    flappyContainer.addEventListener('transitionend', () => {
+      if (!flappyContainer.classList.contains('active')) gui.style.opacity = 0;
     });
   </script>
 </body>
