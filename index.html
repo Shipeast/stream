@@ -43,28 +43,6 @@
     }
     header p { color: var(--muted); margin-top: 8px; font-size: clamp(0.9rem, 2vw, 1.1rem); }
 
-    .mode-pill {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.02);
-      border-radius: 50px;
-      padding: 6px 10px;
-      color: var(--muted);
-      font-size: 0.8rem;
-      opacity: 0.6;
-      transition: opacity 0.2s ease;
-    }
-    .mode-pill:hover { opacity: 1; }
-    .mode-toggle {
-      background: transparent;
-      border: none;
-      color: var(--muted);
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.8rem;
-    }
-
     .grid {
       display: flex;
       flex-wrap: wrap;
@@ -135,38 +113,43 @@
       transform: scale(1.05);
     }
 
-    /* Dino overlay */
-    #dinoOverlay {
+    /* Flappy Bird fullscreen overlay */
+    #flappyContainer {
       position: fixed;
       top: 0; left: 0;
-      width: 100%; height: 100%;
+      width: 100vw;
+      height: 100vh;
       background: #0b0d10;
       display: none;
       justify-content: center;
       align-items: center;
+      flex-direction: column;
       z-index: 1000;
     }
-    #dinoOverlay iframe {
-      width: 100%;
-      height: 100%;
+    #backBtn {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      font-size: 1.8rem;
+      color: var(--accent);
+      background: transparent;
       border: none;
+      cursor: pointer;
+      z-index: 1010;
     }
+    canvas { display: block; }
 
     @media (max-width: 600px) {
       .grid { gap: 18px; }
       .card { width: 90%; }
       footer { font-size: 0.85rem; }
       .socials a { font-size: 1rem; padding: 8px 14px; }
+      #backBtn { font-size: 1.5rem; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="mode-pill">
-      <span id="modeLabel">Režim: Divák</span>
-      <button id="modeSwitch" class="mode-toggle">⇄</button>
-    </div>
-
     <header>
       <h1>Hraj se mnou!</h1>
       <p>Klikni a připoj se do hry 🎮</p>
@@ -188,7 +171,7 @@
         <div class="game-desc">Kresli a hádej s ostatními</div>
         <a id="link3" class="play-btn" href="https://www.drawize.com/play" target="_blank">Hrát</a>
       </div>
-      <button id="dinoBtn" class="mini-btn">🦖 Hrát při čekání</button>
+      <button id="flappyBtn" class="mini-btn">🐤 Hrát při čekání</button>
     </div>
 
     <footer>
@@ -200,12 +183,14 @@
     </footer>
   </div>
 
-  <div id="dinoOverlay">
-    <iframe src="dino.html"></iframe>
+  <!-- Flappy Bird overlay -->
+  <div id="flappyContainer">
+    <button id="backBtn">🏠</button>
+    <canvas id="flappyCanvas"></canvas>
   </div>
 
   <script>
-    // Mode switch
+    // Mode switch (Divák / Streamer)
     const MODES = {
       viewer: { name: 'Divák', links: ['https://kahoot.it','https://openguessr.com/multiplayer/join','https://www.drawize.com/play'] },
       streamer: { name: 'Streamer', links: ['https://kahoot.com','https://openguessr.com/multiplayer/host','https://www.drawize.com/play'] }
@@ -230,11 +215,114 @@
       setMode(next);
     });
 
-    // Dino overlay
-    const dinoBtn=document.getElementById('dinoBtn');
-    const dinoOverlay=document.getElementById('dinoOverlay');
-    dinoBtn.addEventListener('click',()=>{ dinoOverlay.style.display='flex'; });
-    dinoOverlay.addEventListener('click',(e)=>{ if(e.target===dinoOverlay){ dinoOverlay.style.display='none'; } });
-  </script>
+    // Flappy Bird overlay toggle
+    const flappyBtn=document.getElementById('flappyBtn');
+    const flappyContainer=document.getElementById('flappyContainer');
+    const backBtn=document.getElementById('backBtn');
+    const canvas=document.getElementById('flappyCanvas');
+  <script>
+const ctx = canvas.getContext('2d');
+let cw = canvas.width = window.innerWidth;
+let ch = canvas.height = window.innerHeight;
+
+// Hráč (ptáček)
+const bird = { x: 150, y: ch/2, w: 34, h: 24, gravity: 0.6, lift: -12, velocity: 0 };
+
+// Trubky
+const pipes = [];
+const pipeWidth = 80;
+const gap = 200;
+let frame = 0;
+let score = 0;
+let highScore = parseInt(localStorage.getItem('flappyHighscore') || '0');
+
+// Ovládání
+function flap() { bird.velocity = bird.lift; }
+document.addEventListener('keydown', e=>{ if(e.code==='Space'){ flap(); } });
+canvas.addEventListener('click', flap);
+canvas.addEventListener('touchstart', e=>{ e.preventDefault(); flap(); });
+
+// Reset hry
+function resetGame() {
+  bird.y = ch/2;
+  bird.velocity = 0;
+  pipes.length = 0;
+  score = 0;
+  frame = 0;
+}
+
+// Změna velikosti canvasu při resize
+window.addEventListener('resize', ()=>{
+  cw = canvas.width = window.innerWidth;
+  ch = canvas.height = window.innerHeight;
+  resetGame();
+});
+
+// Generování trubek
+function addPipe() {
+  const top = Math.random() * (ch - gap - 200) + 50;
+  pipes.push({ x: cw, top: top, bottom: top + gap });
+}
+
+// Hlavní update a render loop
+function loop() {
+  ctx.fillStyle = '#0b0d10';
+  ctx.fillRect(0,0,cw,ch);
+
+  // ptáček
+  bird.velocity += bird.gravity;
+  bird.y += bird.velocity;
+  ctx.fillStyle = '#ffd300';
+  ctx.fillRect(bird.x, bird.y, bird.w, bird.h);
+
+  // trubky
+  if(frame % 90 === 0) addPipe();
+  for(let i=pipes.length-1;i>=0;i--){
+    pipes[i].x -= 4;
+    ctx.fillStyle = '#ffd300';
+    ctx.fillRect(pipes[i].x,0,pipeWidth,pipes[i].top);
+    ctx.fillRect(pipes[i].x,pipes[i].bottom,pipeWidth,ch-pipes[i].bottom);
+
+    // kolize
+    if(bird.x + bird.w > pipes[i].x && bird.x < pipes[i].x + pipeWidth &&
+       (bird.y < pipes[i].top || bird.y + bird.h > pipes[i].bottom)){
+      resetGame();
+    }
+
+    // bodování
+    if(pipes[i].x + pipeWidth < bird.x && !pipes[i].passed){
+      score++;
+      pipes[i].passed = true;
+      if(score>highScore){ highScore = score; localStorage.setItem('flappyHighscore', highScore); }
+    }
+
+    if(pipes[i].x + pipeWidth < 0) pipes.splice(i,1);
+  }
+
+  // zem
+  if(bird.y + bird.h > ch) resetGame();
+
+  // skóre
+  ctx.fillStyle = '#ffd300';
+  ctx.font = '32px Poppins';
+  ctx.fillText(`Score: ${score}`, 20, 50);
+  ctx.fillText(`Highscore: ${highScore}`, 20, 90);
+
+  frame++;
+  requestAnimationFrame(loop);
+}
+
+// Spuštění hry po kliknutí na tlačítko
+flappyBtn.addEventListener('click', ()=>{
+  flappyContainer.style.display = 'flex';
+  resetGame();
+  loop();
+});
+
+// Návrat zpět
+backBtn.addEventListener('click', ()=>{
+  flappyContainer.style.display = 'none';
+});
+</script>
 </body>
 </html>
